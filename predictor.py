@@ -25,10 +25,26 @@ def engineer_features(df):
 def main():
     # Load and Prepare Data
     hist, wc26 = get_data()
-    
+
     # Combine History + Finished Tournament matches for Training
     wc26_finished = wc26.dropna(subset=['Outcome'])
     train_data = pd.concat([hist, wc26_finished], ignore_index=True)
+
+    # Create a copy of the training data
+    df_swapped = train_data.copy()
+
+# Swap Home and Away columns
+    df_swapped.rename(columns={
+        'Home_Team': 'Away_Team', 'Away_Team': 'Home_Team',
+        'Home_Elo': 'Away_Elo', 'Away_Elo': 'Home_Elo',
+        'Home_Goals': 'Away_Goals', 'Away_Goals': 'Home_Goals'
+    }, inplace=True)
+
+# Swap the Outcome: If it was Home Win (2), it becomes Away Win (0). If Draw (1), stays (1).
+    df_swapped['Outcome'] = df_swapped['Outcome'].replace({2: 0, 0: 2})
+
+# Combine original with the swapped data
+    train_data = pd.concat([train_data, df_swapped], ignore_index=True)
     
     # Apply Feature Engineering
     train_data = engineer_features(train_data)
