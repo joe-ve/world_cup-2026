@@ -70,11 +70,13 @@ def main():
         
         # Predict
         probs = model.predict_proba(input_data)[0]
+
+        home_win_chance = probs[2] + (probs[1] / 2)
+        away_win_chance = probs[0] + (probs[1] / 2)
         
         print(f"\nResults for {home} vs {away}:")
-        print(f"Home Win: {probs[2]:.2%}")
-        print(f"Draw:     {probs[1]:.2%}")
-        print(f"Away Win: {probs[0]:.2%}")
+        print(f"Home Win: {home_win_chance:.2%}")
+        print(f"Away Win: {away_win_chance:.2%}")
         
         if input("\nPredict another? (y/n): ").lower() != 'y':
             break
